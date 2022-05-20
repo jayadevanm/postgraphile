@@ -51,7 +51,7 @@ $ psql postgres://localhost:5432/testdb # Connects to the `testdb` database at `
 $ psql postgres://somehost:2345/somedb  # connects to the `somedb` database at `postgres://somehost:2345`
 ```
 
-Read the documentation on [Postgres connection strings](https://www.postgresql.org/docs/9.6/static/libpq-connect.html#LIBPQ-CONNSTRING) to learn more about alternative formats (including using a password).
+Read the documentation on [Postgres connection strings](https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-CONNSTRING) to learn more about alternative formats (including using a password).
 
 After running `psql` with your database URL, you should be in a SQL prompt:
 
@@ -106,7 +106,7 @@ Let’s go on to setting up our database schemas.
 
 All of our database objects will go into one or two custom Postgres schemas. A schema is essentially a namespace, it allows you to create tables with the same name like `a.person` and `b.person`.
 
-You can name your schema anything, we recommend naming your schema after your app. This way if you are working on multiple apps in the same database (this might only realistically happen in development), you can easily query the databases of the different apps. We are going to create two schemas: `forum_example`, and `forum_example_private`. To create these schemas we use the [`CREATE SCHEMA`](https://www.postgresql.org/docs/9.6/static/sql-createschema.html) command.
+You can name your schema anything, we recommend naming your schema after your app. This way if you are working on multiple apps in the same database (this might only realistically happen in development), you can easily query the databases of the different apps. We are going to create two schemas: `forum_example`, and `forum_example_private`. To create these schemas we use the [`CREATE SCHEMA`](https://www.postgresql.org/docs/current/sql-createschema.html) command.
 
 ```sql
 create schema forum_example;
@@ -137,7 +137,7 @@ Now we have created a table with `id`, `first_name`, `last_name`, `about`, and `
 
 1.  `create table forum_example.person`: This tells Postgres that we are creating a table in the `forum_example` schema named `person`. This table will represent all of our forum’s users.
 2.  `id serial primary key`: This line establishes an auto-incrementing id field which is always guaranteed to be unique. The first person we create will have an id of 1, the second user will have an id of 2, and so on. The `primary key` bit is also very important. PostGraphile will use the `primary key` of a table in many places to uniquely identify an object, including the globally unique id field.
-3.  `first_name text not null check (char_length(first_name) < 80)`: We want all of our users to enter their first name and last name seperately, so this column definition will create a column named `first_name`, of type `text`, that is required (`not null`), and that must be less than 80 characters long (`check (char_length(first_name) < 80)`). [Check constraints](https://www.postgresql.org/docs/9.6/static/ddl-constraints.html) are a very powerful feature in Postgres for data validation.
+3.  `first_name text not null check (char_length(first_name) < 80)`: We want all of our users to enter their first name and last name seperately, so this column definition will create a column named `first_name`, of type `text`, that is required (`not null`), and that must be less than 80 characters long (`check (char_length(first_name) < 80)`). [Check constraints](https://www.postgresql.org/docs/current/ddl-constraints.html) are a very powerful feature in Postgres for data validation.
 4.  `last_name text check (char_length(last_name) < 80)`: This is very similar to our column definition for `first_name`, except it is missing `not null`. This means that unlike the `first_name` column, `last_name` is not required.
 5.  `about text`: We want users to be able to express themselves! So they get to write a mini forum post which will go on their profile page.
 6.  `created_at timestamp default now()`: This final column definition will provide us with some extra meta-information about their user. If not specified explicitly, the `created_at` timestamp will default to the time the row was inserted.
@@ -165,7 +165,7 @@ The syntax and features of the Postgres [`CREATE TABLE`](https://www.postgresql.
 
 ### Table Documentation
 
-Now that we have created our table, we want to document it within the Postgres database. By adding comments to our table and its columns using the Postgres [`COMMENT`](https://www.postgresql.org/docs/9.6/static/sql-comment.html) command, we will allow tools like PostGraphile to display rich domain specific documentation.
+Now that we have created our table, we want to document it within the Postgres database. By adding comments to our table and its columns using the Postgres [`COMMENT`](https://www.postgresql.org/docs/current/sql-comment.html) command, we will allow tools like PostGraphile to display rich domain specific documentation.
 
 To add comments, just see the SQL below:
 
@@ -320,7 +320,7 @@ $$ language sql stable;
 comment on function forum_example.person_latest_post(forum_example.person) is 'Gets the latest post written by the person.';
 ```
 
-Don’t get too stuck on the function implementations. It is fairly easy to discover how to express what you want in SQL through a quick search of the Postgres documentation (which is excellent!). These functions are here to give you some examples of what functions in Postgres look like. Also note how we added comments to our functions with the [`COMMENT`](https://www.postgresql.org/docs/9.6/static/sql-comment.html) command, just like we add comments to our tables.
+Don’t get too stuck on the function implementations. It is fairly easy to discover how to express what you want in SQL through a quick search of the Postgres documentation (which is excellent!). These functions are here to give you some examples of what functions in Postgres look like. Also note how we added comments to our functions with the [`COMMENT`](https://www.postgresql.org/docs/current/sql-comment.html) command, just like we add comments to our tables.
 
 > **Note:** Any function which meets the following conditions will be treated as a computed field by PostGraphile:
 >
@@ -374,15 +374,15 @@ The difference with this function and the ones before is the return signature re
 > }
 > ```
 
-> **Note:** Postgres has awesome text searching capabilities, the function above uses a basic `ILIKE` [pattern matching](https://www.postgresql.org/docs/9.6/static/functions-matching.html) operator. If you want high quality full text searching you don’t need to look outside Postgres. Instead look into the Postgres [Full Text Search](https://www.postgresql.org/docs/9.6/static/textsearch.html) functionality. It is a great feature, but a bit much for our simple example.
+> **Note:** Postgres has awesome text searching capabilities, the function above uses a basic `ILIKE` [pattern matching](https://www.postgresql.org/docs/current/functions-matching.html) operator. If you want high quality full text searching you don’t need to look outside Postgres. Instead look into the Postgres [Full Text Search](https://www.postgresql.org/docs/current/textsearch.html) functionality. It is a great feature, but a bit much for our simple example.
 
 > **Note:** Returning an array (`returns post[]`), and returning a set (`returns setof post`) are two very different things. When you return an array, every single value in the array will always be returned. However, when you return a set it is like returning a table. Users can paginate through a set using `limit` and `offset`, but not an array.
 
 ### Triggers
 
-You can also use Postgres functions to define triggers. Triggers in Postgres allow you to hook into events that are happening on your tables such as inserts, updates, or deletes. You define your triggers with the [`CREATE TRIGGER`](https://www.postgresql.org/docs/9.6/static/sql-createtrigger.html) command, and all trigger functions must return the special type `trigger`.
+You can also use Postgres functions to define triggers. Triggers in Postgres allow you to hook into events that are happening on your tables such as inserts, updates, or deletes. You define your triggers with the [`CREATE TRIGGER`](https://www.postgresql.org/docs/current/sql-createtrigger.html) command, and all trigger functions must return the special type `trigger`.
 
-To demonstrate how triggers work, we will define a trigger that sets an `updated_at` column on our `forum_example.person` and `forum_example.post` tables whenever a row is updated. Before we can write the trigger, we need to make sure `forum_example.person` and `forum_example.post` have an `updated_at` column! To do this we will use the [`ALTER TABLE`](https://www.postgresql.org/docs/9.6/static/sql-altertable.html) command.
+To demonstrate how triggers work, we will define a trigger that sets an `updated_at` column on our `forum_example.person` and `forum_example.post` tables whenever a row is updated. Before we can write the trigger, we need to make sure `forum_example.person` and `forum_example.post` have an `updated_at` column! To do this we will use the [`ALTER TABLE`](https://www.postgresql.org/docs/current/sql-altertable.html) command.
 
 ```sql
 alter table forum_example.person add column updated_at timestamp default now();
@@ -410,19 +410,19 @@ create trigger post_updated_at before update
   execute procedure forum_example_private.set_updated_at();
 ```
 
-To define our trigger we ran three commands. First we created a function named `set_updated_at` in our `forum_example_private` schema because we want no one to directly call this function as it is simply a utility. `forum_example_private.set_updated_at` also returns a `trigger` and is implemented in [PL/pgSQL](https://www.postgresql.org/docs/9.6/static/plpgsql.html).
+To define our trigger we ran three commands. First we created a function named `set_updated_at` in our `forum_example_private` schema because we want no one to directly call this function as it is simply a utility. `forum_example_private.set_updated_at` also returns a `trigger` and is implemented in [PL/pgSQL](https://www.postgresql.org/docs/current/plpgsql.html).
 
-After we define our `forum_example_private.set_updated_at` function, we can use it in the triggers we create with the [`CREATE TRIGGER`](https://www.postgresql.org/docs/9.6/static/sql-createtrigger.html) command. The triggers will run before a row is updated by the [`UPDATE`](https://www.postgresql.org/docs/9.6/static/sql-update.html) command and will execute the function on every row being updated.
+After we define our `forum_example_private.set_updated_at` function, we can use it in the triggers we create with the [`CREATE TRIGGER`](https://www.postgresql.org/docs/current/sql-createtrigger.html) command. The triggers will run before a row is updated by the [`UPDATE`](https://www.postgresql.org/docs/current/sql-update.html) command and will execute the function on every row being updated.
 
-> **Note:** If you want to do some CPU intensive work in triggers, perhaps consider using Postgres’s pub/sub functionality by running the [`NOTIFY`](https://www.postgresql.org/docs/9.6/static/sql-notify.html) command in triggers and then use the [`LISTEN`](https://www.postgresql.org/docs/9.6/static/sql-listen.html) command in a worker service. If Node.js is your platform of choice, you could use the [`pg-pubsub`](https://www.npmjs.com/package/pg-pubsub) package to make listening easier.
+> **Note:** If you want to do some CPU intensive work in triggers, perhaps consider using Postgres’s pub/sub functionality by running the [`NOTIFY`](https://www.postgresql.org/docs/current/sql-notify.html) command in triggers and then use the [`LISTEN`](https://www.postgresql.org/current/static/sql-listen.html) command in a worker service. If Node.js is your platform of choice, you could use the [`pg-pubsub`](https://www.npmjs.com/package/pg-pubsub) package to make listening easier.
 
 ---
 
 That’s about it as far as Postgres functions go! They are a fun, interesting, and useful topic to understand when it comes to good Postgres schema design. Always remember, the Postgres documentation is your best friend as you try to write your own functions. Some important documentation articles we mentioned for your reference are as follows:
 
 - [`CREATE FUNCTION`](https://www.postgresql.org/docs/current/static/sql-createfunction.html)
-- [`CREATE TRIGGER`](https://www.postgresql.org/docs/9.6/static/sql-createtrigger.html)
-- [`PL/pgSQL`](https://www.postgresql.org/docs/8.3/static/plpgsql.html)
+- [`CREATE TRIGGER`](https://www.postgresql.org/docs/current/sql-createtrigger.html)
+- [`PL/pgSQL`](https://www.postgresql.org/docs/currentc/plpgsql.html)
 
 Next up, we are going to learn about auth in Postgres and PostGraphile!
 
@@ -463,7 +463,7 @@ Besides those arguments, moving the person’s account to a seperate table is al
 
 Before a user can log in, they need to have an account in our database. To register a user we are going to implement a Postgres function in PL/pgSQL which will create two rows. The first row will be the user’s profile inserted into `forum_example.person`, and the second will be an account inserted into `forum_example_private.person_account`.
 
-Before we define the function, we know that we will want to hash the passwords coming into the function before inserting them into `forum_example_private.person_account`. To hash passwords we will need the Postgres [`pgcrypto`](https://www.postgresql.org/docs/9.6/static/pgcrypto.html) extension. To add the extension, just do the following:
+Before we define the function, we know that we will want to hash the passwords coming into the function before inserting them into `forum_example_private.person_account`. To hash passwords we will need the Postgres [`pgcrypto`](https://www.postgresql.org/docs/current/pgcrypto.html) extension. To add the extension, just do the following:
 
 ```sql
 create extension if not exists "pgcrypto";
@@ -499,7 +499,7 @@ comment on function forum_example.register_person(text, text, text, text) is 'Re
 
 If you do not understand what is going on here, do not worry, writing PL/pgSQL requires some trial and error along with some StackOverflow searching. What’s new here compared to our other functions is that we have a new block, `declare`, above our function implementation which starts with `begin`. In that block we declare our intention to use a variable called `person` of type `forum_example.person`. Then, in our first insert statement, the row we insert will be saved into that `person` variable.
 
-After we insert a profile into `forum_example.person`, we use the `pgcrypto` extension in the expression `crypt(password, gen_salt('bf'))` to hash the user’s password before inserting into `forum_example_private.person_account`. This way we aren’t storing the password in plaintext. Read the documentation for `pgcrypto` on [Password Hashing Functions](https://www.postgresql.org/docs/9.6/static/pgcrypto.html#AEN178870) to learn more about these functions and their characteristics.
+After we insert a profile into `forum_example.person`, we use the `pgcrypto` extension in the expression `crypt(password, gen_salt('bf'))` to hash the user’s password before inserting into `forum_example_private.person_account`. This way we aren’t storing the password in plaintext. Read the documentation for `pgcrypto` on [Password Hashing Functions](https://www.postgresql.org/docs/current/pgcrypto.html#AEN178870) to learn more about these functions and their characteristics.
 
 > **Warning:** Be very careful with logging, while we encrypt our passwords here it may be possible that in a query or server log the password will be recorded in plain text! Be careful to configure your Postgres logs so this isn’t the case. PostGraphile will never log the value of any variables the client gives it. Being careful with your logs and passwords is true in any system, but especially this one.
 >
@@ -532,7 +532,7 @@ create role forum_example_anonymous;
 grant forum_example_anonymous to forum_example_postgraphile;
 ```
 
-Here we use [`CREATE ROLE`](https://www.postgresql.org/docs/current/static/sql-createrole.html) again. This role cannot login so it does not have the `login` option, or a password. We also use the [`GRANT`](https://www.postgresql.org/docs/9.6/static/sql-grant.html) command to grant access to the `forum_example_anonymous` role to the `forum_example_postgraphile` role. Now, the `forum_example_postgraphile` role can control and become the `forum_example_anonymous` role. If we did not use that grant, we could not change into the `forum_example_anonymous` role in PostGraphile. Now we will start our server like so:
+Here we use [`CREATE ROLE`](https://www.postgresql.org/docs/current/static/sql-createrole.html) again. This role cannot login so it does not have the `login` option, or a password. We also use the [`GRANT`](https://www.postgresql.org/docs/current/sql-grant.html) command to grant access to the `forum_example_anonymous` role to the `forum_example_postgraphile` role. Now, the `forum_example_postgraphile` role can control and become the `forum_example_anonymous` role. If we did not use that grant, we could not change into the `forum_example_anonymous` role in PostGraphile. Now we will start our server like so:
 
 ```bash
 postgraphile \
@@ -655,7 +655,7 @@ The function body is a single statement:
       and account.password_hash = crypt($2, account.password_hash);
 ```
 
-This code will select a single account from `forum_example_private.person_account` using the provided email value. The `$1` here is just another way to write the `email` argument. If we had written `email = email` or even `a.email = email`, Postgres would not have known which email we were referring to, so instead we just used a substitute for the `email` argument which depends on its placement in the identifer `$1`. If Postgres does not successfully find a person with that email, then no records will be available for the select and the function will return null. If it does find a matching email, it will proceed to check if the password also matches. To do this, Postgress will check to see if the plaintext `password` argument we were provided matches the password hash that was stored in our `forum_example_private.person_account`’s `password_hash` table. If there is a match, then we return a JWT token. Otherwise we return null as previously described. The password match check is done in the code `account.password_hash = crypt($2, account.password_hash)`. To better understand how this works, read the documentation for `pgcrypto` on [password hashing functions](https://www.postgresql.org/docs/9.6/static/pgcrypto.html#AEN178870).
+This code will select a single account from `forum_example_private.person_account` using the provided email value. The `$1` here is just another way to write the `email` argument. If we had written `email = email` or even `a.email = email`, Postgres would not have known which email we were referring to, so instead we just used a substitute for the `email` argument which depends on its placement in the identifer `$1`. If Postgres does not successfully find a person with that email, then no records will be available for the select and the function will return null. If it does find a matching email, it will proceed to check if the password also matches. To do this, Postgress will check to see if the plaintext `password` argument we were provided matches the password hash that was stored in our `forum_example_private.person_account`’s `password_hash` table. If there is a match, then we return a JWT token. Otherwise we return null as previously described. The password match check is done in the code `account.password_hash = crypt($2, account.password_hash)`. To better understand how this works, read the documentation for `pgcrypto` on [password hashing functions](https://www.postgresql.org/docs/current/pgcrypto.html#AEN178870).
 
 In order to construct a `forum_example.jwt_token` we use the Postgres [composite value input](https://www.postgresql.org/docs/9.6/static/rowtypes.html#AEN8046) syntax which looks like: `('forum_example_person', account.person_id)`. Then we cast that composite value with `::forum_example.jwt_token`. The order in which the values go is the order in which they were originally defined. Since we defined `role` first and `person_id` second, this JWT will have a `role` of `forum_example_person` and a `person_id` of `account.person_id`.
 
@@ -710,7 +710,7 @@ Now, let’s use the JWT to define permissions.
 
 ### Grants
 
-Role-based permissions are assigned using the `GRANT` command. For a thorough explanation of grants, see the [GRANT](https://www.postgresql.org/docs/9.6/static/sql-grant.html) page of the Postgres documentation. For the purpose of this tutorial, we will assign the following grants:
+Role-based permissions are assigned using the `GRANT` command. For a thorough explanation of grants, see the [GRANT](https://www.postgresql.org/docs/current/sql-grant.html) page of the Postgres documentation. For the purpose of this tutorial, we will assign the following grants:
 
 ```sql
 grant usage on schema forum_example to forum_example_anonymous, forum_example_person;
@@ -753,7 +753,7 @@ alter table forum_example.person enable row level security;
 alter table forum_example.post enable row level security;
 ```
 
-Before running these commands, the `forum_example_person` and `forum_example_anonymous` roles could see every row in the table with a `select * from forum_example.person` query. After running these two commands those same roles can’t. By enabling row level security, our roles don’t have any access to read or write to a table that you don’t explicitly give, so to re-enable access to all the rows we will define RLS policies with the [`CREATE POLICY`](https://www.postgresql.org/docs/9.6/static/sql-createpolicy.html) command.
+Before running these commands, the `forum_example_person` and `forum_example_anonymous` roles could see every row in the table with a `select * from forum_example.person` query. After running these two commands those same roles can’t. By enabling row level security, our roles don’t have any access to read or write to a table that you don’t explicitly give, so to re-enable access to all the rows we will define RLS policies with the [`CREATE POLICY`](https://www.postgresql.org/docs/current/sql-createpolicy.html) command.
 
 ```sql
 create policy select_person on forum_example.person for select
