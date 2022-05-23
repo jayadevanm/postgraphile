@@ -414,7 +414,7 @@ To define our trigger we ran three commands. First we created a function named `
 
 After we define our `forum_example_private.set_updated_at` function, we can use it in the triggers we create with the [`CREATE TRIGGER`](https://www.postgresql.org/docs/current/sql-createtrigger.html) command. The triggers will run before a row is updated by the [`UPDATE`](https://www.postgresql.org/docs/current/sql-update.html) command and will execute the function on every row being updated.
 
-> **Note:** If you want to do some CPU intensive work in triggers, perhaps consider using Postgres’s pub/sub functionality by running the [`NOTIFY`](https://www.postgresql.org/docs/current/sql-notify.html) command in triggers and then use the [`LISTEN`](https://www.postgresql.org/current/sql-listen.html) command in a worker service. If Node.js is your platform of choice, you could use the [`pg-pubsub`](https://www.npmjs.com/package/pg-pubsub) package to make listening easier.
+> **Note:** If you want to do some CPU intensive work in triggers, perhaps consider using Postgres’s pub/sub functionality by running the [`NOTIFY`](https://www.postgresql.org/docs/current/sql-notify.html) command in triggers and then use the [`LISTEN`](https://www.postgresql.org/docs/current/sql-listen.html) command in a worker service. If Node.js is your platform of choice, you could use the [`pg-pubsub`](https://www.npmjs.com/package/pg-pubsub) package to make listening easier.
 
 ---
 
@@ -422,7 +422,7 @@ That’s about it as far as Postgres functions go! They are a fun, interesting, 
 
 - [`CREATE FUNCTION`](https://www.postgresql.org/docs/current/sql-createfunction.html)
 - [`CREATE TRIGGER`](https://www.postgresql.org/docs/current/sql-createtrigger.html)
-- [`PL/pgSQL`](https://www.postgresql.org/docs/currentc/plpgsql.html)
+- [`PL/pgSQL`](https://www.postgresql.org/docs/current/plpgsql.html)
 
 Next up, we are going to learn about auth in Postgres and PostGraphile!
 
