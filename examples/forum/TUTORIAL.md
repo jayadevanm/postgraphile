@@ -121,7 +121,7 @@ Theoretically we want a user to be able to log in directly to our Postgres datab
 
 ### The Person Table
 
-Now we are going to create the tables in our database which will correspond to our users. We will do this by running the Postgres [`CREATE TABLE`](https://www.postgresql.org/docs/current/static/sql-createtable.html) command. Here is the definition for our person table:
+Now we are going to create the tables in our database which will correspond to our users. We will do this by running the Postgres [`CREATE TABLE`](https://www.postgresql.org/docs/current/sql-createtable.html) command. Here is the definition for our person table:
 
 ```sql
 create table forum_example.person (
@@ -144,7 +144,7 @@ Now we have created a table with `id`, `first_name`, `last_name`, `about`, and `
 
 And that’s our person table! Pretty simple, right?
 
-The syntax and features of the Postgres [`CREATE TABLE`](https://www.postgresql.org/docs/current/static/sql-createtable.html) command are fairly easy to learn and understand. Creating tables is the easiest, but also the most fundamental part of your schema design.
+The syntax and features of the Postgres [`CREATE TABLE`](https://www.postgresql.org/docs/current/sql-createtable.html) command are fairly easy to learn and understand. Creating tables is the easiest, but also the most fundamental part of your schema design.
 
 > **Note:** We prefer singular identifers like `forum_example.person` over `forum_example.people` because when you create a table, it is like you are creating a class in a statically typed language. Classes have singular names like “Person” while collections will often have plural names like “People.” Table as a class is a better analogy than table as a collection because Postgres itself will internally call tables “classes.”
 
@@ -197,7 +197,7 @@ create type forum_example.post_topic as enum (
 );
 ```
 
-The Postgres [`CREATE TYPE`](https://www.postgresql.org/docs/current/static/sql-createtype.html) command will let you create a custom type in your database which will allow you to do some really cool things. You can create a [composite type](https://www.postgresql.org/docs/9.6/static/rowtypes.html) which is basically a typed object in GraphQL terms, you can create a [range type](https://www.postgresql.org/docs/current/static/rangetypes.html) which represents exactly what you might think, or you can create an [enum type](https://www.postgresql.org/docs/current/static/datatype-enum.html) which is what we did here.
+The Postgres [`CREATE TYPE`](https://www.postgresql.org/docs/current/sql-createtype.html) command will let you create a custom type in your database which will allow you to do some really cool things. You can create a [composite type](https://www.postgresql.org/docs/current/rowtypes.html) which is basically a typed object in GraphQL terms, you can create a [range type](https://www.postgresql.org/docs/current/rangetypes.html) which represents exactly what you might think, or you can create an [enum type](https://www.postgresql.org/docs/current/datatype-enum.html) which is what we did here.
 
 Enum types are a static set of values, you _must_ use one of the string values that make up the enum in any column of the enum’s type. Having this type is useful for us, because we want our forum posts to have one, or none, topics so user’s may easily see what a post is about.
 
@@ -257,7 +257,7 @@ Now that we have gone over the basics, let’s explore Postgres functions and se
 
 ## Database Functions
 
-The Postgres [`CREATE FUNCTION`](https://www.postgresql.org/docs/current/static/sql-createfunction.html) command is truly amazing. It allows us to write functions for our database in SQL, and other languages including JavaScript and Ruby!
+The Postgres [`CREATE FUNCTION`](https://www.postgresql.org/docs/current/sql-createfunction.html) command is truly amazing. It allows us to write functions for our database in SQL, and other languages including JavaScript and Ruby!
 
 The following is a basic Postgres function:
 
@@ -414,13 +414,13 @@ To define our trigger we ran three commands. First we created a function named `
 
 After we define our `forum_example_private.set_updated_at` function, we can use it in the triggers we create with the [`CREATE TRIGGER`](https://www.postgresql.org/docs/current/sql-createtrigger.html) command. The triggers will run before a row is updated by the [`UPDATE`](https://www.postgresql.org/docs/current/sql-update.html) command and will execute the function on every row being updated.
 
-> **Note:** If you want to do some CPU intensive work in triggers, perhaps consider using Postgres’s pub/sub functionality by running the [`NOTIFY`](https://www.postgresql.org/docs/current/sql-notify.html) command in triggers and then use the [`LISTEN`](https://www.postgresql.org/current/static/sql-listen.html) command in a worker service. If Node.js is your platform of choice, you could use the [`pg-pubsub`](https://www.npmjs.com/package/pg-pubsub) package to make listening easier.
+> **Note:** If you want to do some CPU intensive work in triggers, perhaps consider using Postgres’s pub/sub functionality by running the [`NOTIFY`](https://www.postgresql.org/docs/current/sql-notify.html) command in triggers and then use the [`LISTEN`](https://www.postgresql.org/current/sql-listen.html) command in a worker service. If Node.js is your platform of choice, you could use the [`pg-pubsub`](https://www.npmjs.com/package/pg-pubsub) package to make listening easier.
 
 ---
 
 That’s about it as far as Postgres functions go! They are a fun, interesting, and useful topic to understand when it comes to good Postgres schema design. Always remember, the Postgres documentation is your best friend as you try to write your own functions. Some important documentation articles we mentioned for your reference are as follows:
 
-- [`CREATE FUNCTION`](https://www.postgresql.org/docs/current/static/sql-createfunction.html)
+- [`CREATE FUNCTION`](https://www.postgresql.org/docs/current/sql-createfunction.html)
 - [`CREATE TRIGGER`](https://www.postgresql.org/docs/current/sql-createtrigger.html)
 - [`PL/pgSQL`](https://www.postgresql.org/docs/currentc/plpgsql.html)
 
@@ -519,7 +519,7 @@ When a user logs in, we want them to make their queries using a specific PostGra
 create role forum_example_postgraphile login password 'xyz';
 ```
 
-We create this `forum_example_postgraphile` role with the [`CREATE ROLE`](https://www.postgresql.org/docs/current/static/sql-createrole.html) command. We want to make sure our PostGraphile role can login so we specify that with the `login` option and we give the user a password of ‘xyz’ with the `password` option. Now we will start PostGraphile as such:
+We create this `forum_example_postgraphile` role with the [`CREATE ROLE`](https://www.postgresql.org/docs/current/sql-createrole.html) command. We want to make sure our PostGraphile role can login so we specify that with the `login` option and we give the user a password of ‘xyz’ with the `password` option. Now we will start PostGraphile as such:
 
 ```bash
 postgraphile -c postgres://forum_example_postgraphile:xyz@localhost:5432/mydb
@@ -532,7 +532,7 @@ create role forum_example_anonymous;
 grant forum_example_anonymous to forum_example_postgraphile;
 ```
 
-Here we use [`CREATE ROLE`](https://www.postgresql.org/docs/current/static/sql-createrole.html) again. This role cannot login so it does not have the `login` option, or a password. We also use the [`GRANT`](https://www.postgresql.org/docs/current/sql-grant.html) command to grant access to the `forum_example_anonymous` role to the `forum_example_postgraphile` role. Now, the `forum_example_postgraphile` role can control and become the `forum_example_anonymous` role. If we did not use that grant, we could not change into the `forum_example_anonymous` role in PostGraphile. Now we will start our server like so:
+Here we use [`CREATE ROLE`](https://www.postgresql.org/docs/current/sql-createrole.html) again. This role cannot login so it does not have the `login` option, or a password. We also use the [`GRANT`](https://www.postgresql.org/docs/current/sql-grant.html) command to grant access to the `forum_example_anonymous` role to the `forum_example_postgraphile` role. Now, the `forum_example_postgraphile` role can control and become the `forum_example_anonymous` role. If we did not use that grant, we could not change into the `forum_example_anonymous` role in PostGraphile. Now we will start our server like so:
 
 ```bash
 postgraphile \
@@ -620,7 +620,7 @@ create type forum_example.jwt_token as (
 );
 ```
 
-That’s it. We are using the [`CREATE TYPE`](https://www.postgresql.org/docs/current/static/sql-createtype.html) command again as we did before to create an enum type. This time we are creating a composite type. The definition for a composite type looks very much like the definition of a table type, except a composite type cannot store rows. i.e. you can’t `INSERT`, `SELECT`, `UPDATE`, or `DELETE` from a composite type. While you can’t store rows in a composite type, PostGraphile can turn a composite type into a JWT. Now that we’ve defined this type we will want to start PostGraphile with the `--jwt-token-identifier` flag:
+That’s it. We are using the [`CREATE TYPE`](https://www.postgresql.org/docs/current/sql-createtype.html) command again as we did before to create an enum type. This time we are creating a composite type. The definition for a composite type looks very much like the definition of a table type, except a composite type cannot store rows. i.e. you can’t `INSERT`, `SELECT`, `UPDATE`, or `DELETE` from a composite type. While you can’t store rows in a composite type, PostGraphile can turn a composite type into a JWT. Now that we’ve defined this type we will want to start PostGraphile with the `--jwt-token-identifier` flag:
 
 ```bash
 postgraphile --jwt-token-identifier forum_example.jwt_token
@@ -657,7 +657,7 @@ The function body is a single statement:
 
 This code will select a single account from `forum_example_private.person_account` using the provided email value. The `$1` here is just another way to write the `email` argument. If we had written `email = email` or even `a.email = email`, Postgres would not have known which email we were referring to, so instead we just used a substitute for the `email` argument which depends on its placement in the identifer `$1`. If Postgres does not successfully find a person with that email, then no records will be available for the select and the function will return null. If it does find a matching email, it will proceed to check if the password also matches. To do this, Postgress will check to see if the plaintext `password` argument we were provided matches the password hash that was stored in our `forum_example_private.person_account`’s `password_hash` table. If there is a match, then we return a JWT token. Otherwise we return null as previously described. The password match check is done in the code `account.password_hash = crypt($2, account.password_hash)`. To better understand how this works, read the documentation for `pgcrypto` on [password hashing functions](https://www.postgresql.org/docs/current/pgcrypto.html#AEN178870).
 
-In order to construct a `forum_example.jwt_token` we use the Postgres [composite value input](https://www.postgresql.org/docs/9.6/static/rowtypes.html#AEN8046) syntax which looks like: `('forum_example_person', account.person_id)`. Then we cast that composite value with `::forum_example.jwt_token`. The order in which the values go is the order in which they were originally defined. Since we defined `role` first and `person_id` second, this JWT will have a `role` of `forum_example_person` and a `person_id` of `account.person_id`.
+In order to construct a `forum_example.jwt_token` we use the Postgres [composite value input](https://www.postgresql.org/docs/current/rowtypes.html#AEN8046) syntax which looks like: `('forum_example_person', account.person_id)`. Then we cast that composite value with `::forum_example.jwt_token`. The order in which the values go is the order in which they were originally defined. Since we defined `role` first and `person_id` second, this JWT will have a `role` of `forum_example_person` and a `person_id` of `account.person_id`.
 
 > **Warning:** Be careful about logging around this function too.
 
